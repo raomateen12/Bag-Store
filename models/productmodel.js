@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
  
-  image: { type: String, default: 'https://via.placeholder.com/150' },
+  image: { type: String, required: true },
     name: { type: String, required: true },
     Price: { type: Number, required: true },
     discount: { type: Number, default: 0 },

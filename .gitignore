@@ -1,6 +1,2 @@
 node_modules
 .env
-# .gitignore file is used to specify which files or directories should be ignored by Git.
-# For example, if you have a node_modules directory or an .env file, you can
-# jb ma git init ki coomand likh raha hon ga to us sa reposirty ma files uplaod hon gi to 
-# hm kya krta ha kah files bhhhhhhht zada ho jait ha to h gitignore ma akr likh data ha kah in files ko na upload kro in ko ignore krdo to wo inko ingnore krdata ha 

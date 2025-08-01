@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Scatch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Header/Navbar -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center">
+                        <i class="fas fa-shopping-bag text-3xl text-blue-600 mr-2"></i>
+                        <span class="font-bold text-xl text-gray-800">Scatch</span>
+                    </a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md font-medium">Home</a>
+                    <a href="/shop" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md font-medium">Shop</a>
+                    <a href="/cart" class="text-blue-600 px-3 py-2 rounded-md font-medium relative">
+                        <i class="fas fa-shopping-cart"></i>
+                        <% if (user && user.cart && user.cart.length > 0) { %>
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"><%= user.cart.length %></span>
+                        <% } %>
+                    </a>
+                    <span class="text-gray-700">Hi, <%= user.username %>!</span>
+                    <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md font-medium">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <% if (error && error.length > 0) { %>
+        <div class="max-w-7xl mx-auto px-4 mt-4">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                <% error.forEach(function(err) { %>
+                    <p class="flex items-center"><i class="fas fa-exclamation-circle mr-2"></i><%= err %></p>
+                <% }); %>
+            </div>
+        </div>
+    <% } %>
+
+    <% if (success && success.length > 0) { %>
+        <div class="max-w-7xl mx-auto px-4 mt-4">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                <% success.forEach(function(msg) { %>
+                    <p class="flex items-center"><i class="fas fa-check-circle mr-2"></i><%= msg %></p>
+                <% }); %>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Cart Content -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Cart Header -->
+        <div class="flex items-center mb-8">
+            <i class="fas fa-shopping-cart text-3xl text-blue-600 mr-3"></i>
+            <h1 class="text-4xl font-bold text-gray-800">Shopping Cart</h1>
+        </div>
+        
+        <% if(user.cart && user.cart.length > 0) { %>
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Cart Items -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="p-6 border-b border-gray-200">
+                            <h2 class="text-xl font-semibold text-gray-800">Cart Items (<%= user.cart.length %>)</h2>
+                        </div>
+                        
+                        <div class="divide-y divide-gray-200">
+                            <% user.cart.forEach(function(product, index) { %>
+                                <div class="p-6 hover:bg-gray-50 transition-colors">
+                                    <div class="flex items-center space-x-4">
+                                        <!-- Product Image -->
+                                        <div class="<%= product.bgcolor %> h-20 w-20 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                            <% if (product.image) { %>
+                                                <% if (typeof product.image === 'string') { %>
+                                                    <% if (product.image.startsWith('/uploads/')) { %>
+                                                        <img src="<%= product.image %>" alt="<%= product.name %>" class="w-full h-full object-cover">
+                                                    <% } else { %>
+                                                        <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" class="w-full h-full object-cover">
+                                                    <% } %>
+                                                <% } else { %>
+                                                    <!-- Handle Buffer images (served via route) -->
+                                                    <img src="/owners/product-image/<%= product._id %>" alt="<%= product.name %>" class="w-full h-full object-cover">
+                                                <% } %>
+                                            <% } else { %>
+                                                <i class="fas fa-shopping-bag text-2xl text-gray-600"></i>
+                                            <% } %>
+                                        </div>
+                                        
+                                        <!-- Product Details -->
+                                        <div class="flex-1 min-w-0">
+                                            <h3 class="text-lg font-semibold text-gray-800 truncate"><%= product.name %></h3>
+                                            <p class="text-sm text-gray-500 mt-1">Product ID: <%= product._id.toString().slice(-6) %></p>
+                                            
+                                            <!-- Price Details -->
+                                            <div class="mt-2">
+                                                <div class="flex items-center space-x-2">
+                                                    <span class="text-xl font-bold text-gray-900">PKR<%= product.Price - Math.round(product.Price * product.discount / 100) %></span>
+                                                    <% if (product.discount > 0) { %>
+                                                        <span class="text-sm text-gray-500 line-through">PKR<%= product.Price %></span>
+                                                        <span class="text-sm text-green-600 font-medium">(<%= product.discount %>% off)</span>
+                                                    <% } %>
+                                                </div>
+                                                <% if (product.discount > 0) { %>
+                                                    <p class="text-sm text-green-600 mt-1">You save PKR<%= Math.round(product.Price * product.discount / 100) %></p>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Remove Button -->
+                                        <div class="flex-shrink-0">
+                                            <a href="/removefromcart/<%= product._id %>" 
+                                               class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors"
+                                               onclick="return confirm('Remove this item from cart?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cart Summary -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-6">Order Summary</h2>
+                        
+                        <!-- Cart Statistics -->
+                        <div class="space-y-4 mb-6">
+                            <div class="flex justify-between text-gray-600">
+                                <span>Items (<%= user.cart.length %>)</span>
+                                <span>PKR<%= user.cart.reduce((total, product) => total + product.Price, 0).toLocaleString() %></span>
+                            </div>
+                            
+                            <div class="flex justify-between text-green-600">
+                                <span>Total Savings</span>
+                                <span>-PKR<%= user.cart.reduce((total, product) => total + Math.round(product.Price * product.discount / 100), 0).toLocaleString() %></span>
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4">
+                                <div class="flex justify-between text-lg font-semibold text-gray-800">
+                                    <span>Total Amount</span>
+                                    <span>PKR<%= bill.toLocaleString() %></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="space-y-3">
+                            <button onclick="proceedToCheckout()" 
+                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors">
+                                <i class="fas fa-credit-card mr-2"></i>Proceed to Checkout
+                            </button>
+                            
+                            <a href="/shop" 
+                               class="w-full bg-gray-500 hover:bg-gray-600 text-white py-3 px-4 rounded-lg font-semibold transition-colors text-center block">
+                                <i class="fas fa-arrow-left mr-2"></i>Continue Shopping
+                            </a>
+                            
+                            <button onclick="clearCart()" 
+                                    class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-trash mr-2"></i>Clear Cart
+                            </button>
+                        </div>
+                        
+                        <!-- Security Info -->
+                        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center text-sm text-gray-600">
+                                <i class="fas fa-shield-alt text-green-500 mr-2"></i>
+                                <span>Secure checkout with 256-bit SSL encryption</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <!-- Empty Cart -->
+            <div class="text-center py-16">
+                <div class="bg-white rounded-lg shadow-md p-12 max-w-md mx-auto">
+                    <i class="fas fa-shopping-cart text-6xl text-gray-400 mb-6"></i>
+                    <h3 class="text-2xl font-semibold text-gray-600 mb-4">Your cart is empty</h3>
+                    <p class="text-gray-500 mb-8">Looks like you haven't added any items to your cart yet.</p>
+                    
+                    <div class="space-y-3">
+                        <a href="/shop" 
+                           class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors inline-block">
+                            <i class="fas fa-shopping-bag mr-2"></i>Start Shopping
+                        </a>
+                        
+                        <a href="/" 
+                           class="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-6 rounded-lg font-medium transition-colors inline-block">
+                            <i class="fas fa-home mr-2"></i>Go to Homepage
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-shopping-bag text-2xl text-blue-400 mr-2"></i>
+                        <span class="font-bold text-xl">Scatch</span>
+                    </div>
+                    <p class="text-gray-400">Premium bags for every occasion.</p>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="/shop" class="text-gray-400 hover:text-white">Shop</a></li>
+                        <li><a href="/cart" class="text-gray-400 hover:text-white">Cart</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Account</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/logout" class="text-gray-400 hover:text-white">Logout</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Contact</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><i class="fas fa-phone mr-2"></i> 03097443097</li>
+                        <li><i class="fas fa-envelope mr-2"></i> scatch@admin.com</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                <p class="text-gray-400">&copy; 2025 Scatch. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        function proceedToCheckout() {
+            alert('Checkout functionality will be implemented soon!');
+            // Future: Redirect to payment gateway
+        }
+        
+        function clearCart() {
+            if (confirm('Are you sure you want to clear your entire cart?')) {
+                // Redirect to clear cart route
+                window.location.href = '/clear-cart';
+            }
+        }
+    </script>
+</body>
+</html>

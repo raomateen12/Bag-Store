@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Admin Header -->
+    <nav class="bg-indigo-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-user-shield text-2xl mr-3"></i>
+                    <h1 class="text-2xl font-bold">Edit Product</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/owners/admin" class="bg-indigo-700 hover:bg-indigo-800 px-4 py-2 rounded font-medium">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                    </a>
+                    <a href="/owners/logout" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded font-medium">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <% if(success && success.length > 0) { %>
+        <div class="max-w-4xl mx-auto px-4 mt-4">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                <% success.forEach(function(msg) { %>
+                    <p class="flex items-center"><i class="fas fa-check-circle mr-2"></i><%= msg %></p>
+                <% }); %>
+            </div>
+        </div>
+    <% } %>
+
+    <% if(error && error.length > 0) { %>
+        <div class="max-w-4xl mx-auto px-4 mt-4">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                <% error.forEach(function(err) { %>
+                    <p class="flex items-center"><i class="fas fa-exclamation-circle mr-2"></i><%= err %></p>
+                <% }); %>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Edit Product Form -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <div class="flex items-center mb-6">
+                <i class="fas fa-edit text-3xl text-blue-600 mr-3"></i>
+                <h2 class="text-2xl font-bold text-gray-800">Edit Product</h2>
+            </div>
+
+            <!-- Current Product Preview -->
+            <div class="mb-8 p-4 bg-gray-50 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">Current Product</h3>
+                <div class="flex items-center space-x-4">
+                    <div class="<%= product.bgcolor %> h-20 w-20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-shopping-bag text-2xl text-gray-600"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-800"><%= product.name %></h4>
+                        <p class="text-gray-600">Price: PKR<%= product.Price %></p>
+                        <p class="text-gray-600">Discount: <%= product.discount %>%</p>
+                    </div>
+                </div>
+            </div>
+
+            <form action="/owners/edit-product/<%= product._id %>" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Product Name -->
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-tag mr-1"></i>Product Name
+                        </label>
+                        <input type="text" 
+                               id="name" 
+                               name="name" 
+                               value="<%= product.name %>"
+                               required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Enter product name">
+                    </div>
+
+                    <!-- Price -->
+                    <div>
+                        <label for="Price" class="block text-sm font-medium text-gray-700 mb-2">
+                            Price (PKR)
+                        </label>
+                        <input type="number" 
+                               id="Price" 
+                               name="Price" 
+                               value="<%= product.Price %>"
+                               required 
+                               min="0"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Enter price">
+                    </div>
+
+                    <!-- Discount -->
+                    <div>
+                        <label for="discount" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-percent mr-1"></i>Discount (%)
+                        </label>
+                        <input type="number" 
+                               id="discount" 
+                               name="discount" 
+                               value="<%= product.discount %>"
+                               min="0" 
+                               max="99"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Enter discount percentage">
+                    </div>
+
+                    <!-- Background Color -->
+                    <div>
+                        <label for="bgcolor" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-palette mr-1"></i>Background Color
+                        </label>
+                        <select id="bgcolor" 
+                                name="bgcolor" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="bg-red-100" <%= product.bgcolor === 'bg-red-100' ? 'selected' : '' %>>Red</option>
+                            <option value="bg-blue-100" <%= product.bgcolor === 'bg-blue-100' ? 'selected' : '' %>>Blue</option>
+                            <option value="bg-green-100" <%= product.bgcolor === 'bg-green-100' ? 'selected' : '' %>>Green</option>
+                            <option value="bg-yellow-100" <%= product.bgcolor === 'bg-yellow-100' ? 'selected' : '' %>>Yellow</option>
+                            <option value="bg-purple-100" <%= product.bgcolor === 'bg-purple-100' ? 'selected' : '' %>>Purple</option>
+                            <option value="bg-pink-100" <%= product.bgcolor === 'bg-pink-100' ? 'selected' : '' %>>Pink</option>
+                            <option value="bg-gray-100" <%= product.bgcolor === 'bg-gray-100' ? 'selected' : '' %>>Gray</option>
+                        </select>
+                    </div>
+
+                    <!-- Panel Color -->
+                    <div>
+                        <label for="panecolor" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-square mr-1"></i>Panel Color
+                        </label>
+                        <input type="text" 
+                               id="panecolor" 
+                               name="panecolor" 
+                               value="<%= product.panecolor %>"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="e.g., white, black, etc.">
+                    </div>
+
+                    <!-- Text Color -->
+                    <div>
+                        <label for="textcolor" class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-font mr-1"></i>Text Color
+                        </label>
+                        <input type="text" 
+                               id="textcolor" 
+                               name="textcolor" 
+                               value="<%= product.textcolor %>"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="e.g., gray-800, black, etc.">
+                    </div>
+                </div>
+
+                <!-- Product Image -->
+                <div>
+                    <label for="image" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-image mr-1"></i>Product Image (Optional - leave empty to keep current image)
+                    </label>
+                    <input type="file" 
+                           id="image" 
+                           name="image" 
+                           accept="image/*"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <p class="text-sm text-gray-500 mt-1">Supported formats: JPG, PNG, GIF (Max size: 5MB)</p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex space-x-4 pt-6">
+                    <button type="submit" 
+                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-save mr-2"></i>Update Product
+                    </button>
+                    
+                    <a href="/owners/admin" 
+                       class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 px-6 rounded-lg font-semibold transition-colors text-center">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 mt-12">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <p class="text-gray-400">&copy; 2025 Scatch Admin Panel. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

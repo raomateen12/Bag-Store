@@ -1,0 +1,20 @@
+usermodel
+fullname -string
+email  string
+password string
+cart array
+isadmin   bollean
+orders array
+contact   -number
+picture  -db
+
+
+prudct model
+
+image
+price
+name
+discount
+bgcolor
+panecolor
+textcolor

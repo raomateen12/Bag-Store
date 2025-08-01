@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scatch - Premium Bags Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header/Navbar -->
+    <%- include('./partials/header') %>
+    
+    <!-- Hero Section -->
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="text-center">
+            <h1 class="text-6xl font-bold text-gray-800 mb-4">Welcome to Scatch</h1>
+            <p class="text-xl text-gray-600 mb-8">Premium Bags & Accessories Store</p>
+            
+            <!-- Error Messages -->
+            <% if(error && error.length > 0) { %>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <%= error %>
+                </div>
+            <% } %>
+            
+            <div class="space-x-4">
+                <a href="/shop" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                    Shop Now
+                </a>
+                <a href="/cart" class="bg-gray-500 hover:bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                    View Cart
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <%- include('./partials/footer') %>
+</body>
+</html>

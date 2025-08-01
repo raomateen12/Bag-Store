@@ -1,17 +1,13 @@
-const mongose = require('mongoose');
-mongose.connect('mongodb://localhost:27017/yourdbname', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+const mongoose = require('mongoose');
 
-const userSchema = new mongose.Schema({
+const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
   email: { type: String, required: true },
   password: { type: String, required: true },
-  cart: {
-    type: Array,
-    default: []
-  },
+  cart: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product'  // Products ki array, single Cart nahi
+  }],
   isadmin: { type: Boolean, default: false },
   orders: {
     type: Array,
@@ -24,4 +20,4 @@ picture: {
     type: String,
 },
 })
-modeule.exports = mongose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema);
